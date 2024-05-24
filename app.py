@@ -57,16 +57,12 @@ def format_response(recommended_courses):
         ]
     }
     return response
-from flask import Flask
-from asgi_lifespan import LifespanMiddleware
 
-app = Flask(__name__)
-
-@app.route("/")
+@app.route('/')
 def hello():
-    return "Hello, World!"
-
-app = LifespanMiddleware(app)
+    recommended_courses = recommend_courses('yoga')
+    response = format_response(recommended_courses)
+    return jsonify(response)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
