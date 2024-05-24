@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 from flask import Flask, request, jsonify
+
 nltk.download('punkt')
 nltk.download('stopwords')
 app = Flask(__name__)
@@ -84,4 +85,3 @@ def process_request(req):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
