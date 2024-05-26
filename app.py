@@ -6,24 +6,23 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+
 from flask import Flask, request, jsonify
 
+nltk.download('punkt')
+nltk.download('stopwords')
 app = Flask(__name__)
 
-# Load dataset
 df = pd.read_csv("published_courses_update_new.csv")
 stop_words = set(stopwords.words('english'))
 
-# Tokenizer function
 def tokenize(text):
     tokens = word_tokenize(text)
     return [word.lower() for word in tokens if word.isalnum() and word.lower() not in stop_words]
 
-# Initialize TF-IDF Vectorizer
 tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, max_features=5000)
 tfidf_matrix = tfidf_vectorizer.fit_transform(df['combined_text'])
 
-# Recommendation function
 def recommend_courses(keyword, num_recommendations=5):
     keyword_vector = tfidf_vectorizer.transform([keyword])
     cosine_similarities = cosine_similarity(keyword_vector, tfidf_matrix).flatten()
@@ -31,7 +30,6 @@ def recommend_courses(keyword, num_recommendations=5):
     recommended_courses = df.iloc[related_course_indices][['Course Title','url']]
     return recommended_courses
 
-# Format response for Dialogflow
 def format_response(recommended_courses):
     course_titles = recommended_courses['Course Title'].tolist()
     course_urls = recommended_courses['url'].tolist()
